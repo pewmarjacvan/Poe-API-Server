@@ -1,21 +1,26 @@
 # Start with a Python image
 FROM python:latest
 
-# Set environment variables for Firefox
-ENV GECKO_DRIVER_VERSION=0.33.0 \
-    FIREFOX_BIN=/usr/bin/firefox \
-    FIREFOX_PATH=/usr/local/bin/geckodriver
+# Set environment variables for Chrome
+ENV CHROME_BIN=/usr/bin/google-chrome-stable \
+    CHROME_PATH=/usr/local/bin/chromedriver
 
-# Install Firefox
-RUN apt-get update && apt-get install -y wget gnupg2 unzip firefox-esr --no-install-recommends \
+# Install Google Chrome
+RUN apt-get update && apt-get install -y wget gnupg2 unzip \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Install GeckoDriver
-RUN wget -q --show-progress --https-only --timestamping https://github.com/mozilla/geckodriver/releases/download/v$GECKO_DRIVER_VERSION/geckodriver-v$GECKO_DRIVER_VERSION-linux64.tar.gz \
-    && tar -xzf geckodriver-v$GECKO_DRIVER_VERSION-linux64.tar.gz \
-    && rm geckodriver-v$GECKO_DRIVER_VERSION-linux64.tar.gz \
-    && mv geckodriver $FIREFOX_PATH \
-    && chmod +x $FIREFOX_PATH
+# Install ChromeDriver
+RUN CHROMEDRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE` && \
+    mkdir -p /opt/chromedriver-$CHROMEDRIVER_VERSION && \
+    curl -sS -o /tmp/chromedriver_linux64.zip http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip && \
+    unzip -qq /tmp/chromedriver_linux64.zip -d /opt/chromedriver-$CHROMEDRIVER_VERSION && \
+    rm /tmp/chromedriver_linux64.zip && \
+    chmod +x /opt/chromedriver-$CHROMEDRIVER_VERSION/chromedriver && \
+    ln -fs /opt/chromedriver-$CHROMEDRIVER_VERSION/chromedriver /usr/local/bin/chromedriver
 
 # Set working directory in the container
 WORKDIR /app

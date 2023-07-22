@@ -1,13 +1,32 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium_stealth import stealth
 import markdownify
 
 class ChatBot:
     def start_driver(self, p_b_cookie, bot_name):
-        options = webdriver.FirefoxOptions()
+        options = webdriver.ChromeOptions()
         options.add_argument("--headless")
-        self.driver = webdriver.Firefox(options=options)
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        options.add_argument('--disable-popup-blocking')
+        options.add_argument('--start-maximized')
+        options.add_argument('--disable-extensions')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+
+        self.driver = webdriver.Chrome(options=options)
+        stealth(self.driver,
+        languages=["en-US", "en"],
+        vendor="Google Inc.",
+        platform="Win32",
+        webgl_vendor="Intel Inc.",
+        renderer="Intel Iris OpenGL Engine",
+        fix_hairline=True,
+        )
+        
         self.driver.get(f"https://poe.com/")
         self.driver.add_cookie({"name": "p-b", "value": p_b_cookie})
         self.driver.get(f"https://poe.com/{bot_name}")

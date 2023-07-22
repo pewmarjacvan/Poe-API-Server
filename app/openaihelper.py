@@ -22,10 +22,10 @@ class OpenAIHelper:
         if formatted_messages:
             formatted_messages.append(formatted_messages.pop(0))
 
-        single_message = " \n".join(formatted_messages)
+        single_message = "  ".join(formatted_messages)
 
         self.bot.clear_context()
-        self.bot.send_message(single_message)
+        self.bot.send_message(single_message.replace("\n", ""))
 
         time.sleep(3)
 
