@@ -1,4 +1,4 @@
-# Start with a Python image.
+# Start with a Python image
 FROM python:latest
 
 # Set environment variables for Firefox
